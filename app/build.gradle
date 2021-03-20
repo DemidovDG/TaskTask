@@ -37,5 +37,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    implementation group: 'org.eclipse.mylyn.github', name: 'org.eclipse.egit.github.core', version: '2.1.5'
+    //implementation group: 'org.eclipse.mylyn.github', name: 'org.eclipse.egit.github.core', version: '2.1.5'
+    implementation group: 'com.jcabi', name: 'jcabi-github', version: '1.1.2'
+    implementation group: 'javax.json', name: 'javax.json-api', version: '1.1.4'
+
 }
