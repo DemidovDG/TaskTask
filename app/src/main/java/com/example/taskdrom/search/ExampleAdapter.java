@@ -12,9 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.taskdrom.R;
+import com.example.taskdrom.api.GitRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 public class ExampleAdapter extends RecyclerView.Adapter<ExampleAdapter.ExampleViewHolder> implements Filterable {
     private List<ExampleItem> exampleList;
     private List<ExampleItem> exampleListFull;
@@ -55,20 +58,25 @@ public class ExampleAdapter extends RecyclerView.Adapter<ExampleAdapter.ExampleV
     public Filter getFilter() {
         return exampleFilter;
     }
+
+    //Выгрузка всех репозиториев
     private Filter exampleFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
+
             List<ExampleItem> filteredList = new ArrayList<>();
             if (constraint == null || constraint.length() == 0) {
                 filteredList.addAll(exampleListFull);
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
-                for (ExampleItem item : exampleListFull) {
-                    if (item.getText1().toLowerCase().contains(filterPattern)) {
-                        filteredList.add(item);
-                    }
+                GitRequest request = new GitRequest();
+                Map<String,String> map = request.findRepos(filterPattern);
+                for(Map.Entry<String, String> entry : map.entrySet()) {
+                    filteredList.add(new ExampleItem(R.drawable.ic_launcher_background, entry.getKey(), entry.getValue()));
                 }
             }
+
+
             FilterResults results = new FilterResults();
             results.values = filteredList;
             return results;
