@@ -11,11 +11,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 
+import com.example.taskdrom.api.GitRequest;
 import com.example.taskdrom.search.ExampleAdapter;
 import com.example.taskdrom.search.ExampleItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private ExampleAdapter adapter;
@@ -27,21 +29,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         fillExampleList();
         setUpRecyclerView();
+
     }
 
 
     //Для тестового заполнения
     private void fillExampleList() {
         exampleList = new ArrayList<>();
-        exampleList.add(new ExampleItem(R.drawable.ic_launcher_background, "One", "Ten"));
-        exampleList.add(new ExampleItem(R.drawable.ic_launcher_background, "Two", "Eleven"));
-        exampleList.add(new ExampleItem(R.drawable.ic_launcher_background, "Three", "Twelve"));
-        exampleList.add(new ExampleItem(R.drawable.ic_launcher_background, "Four", "Thirteen"));
-        exampleList.add(new ExampleItem(R.drawable.ic_launcher_background, "Five", "Fourteen"));
-        exampleList.add(new ExampleItem(R.drawable.ic_launcher_background, "Six", "Fifteen"));
-        exampleList.add(new ExampleItem(R.drawable.ic_launcher_background, "Seven", "Sixteen"));
-        exampleList.add(new ExampleItem(R.drawable.ic_launcher_background, "Eight", "Seventeen"));
-        exampleList.add(new ExampleItem(R.drawable.ic_launcher_background, "Nine", "Eighteen"));
+//        exampleList.add(new ExampleItem(R.drawable.ic_launcher_background, "One", "йцу"));
+//        exampleList.add(new ExampleItem(R.drawable.ic_launcher_background, "Two", "фыв"));
+//        exampleList.add(new ExampleItem(R.drawable.ic_launcher_background, "Three", "ячс"));
+
     }
 
     private void setUpRecyclerView() {
@@ -68,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public boolean onQueryTextChange(String newText) {
+
                 adapter.getFilter().filter(newText);
                 return false;
             }
