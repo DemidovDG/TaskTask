@@ -8,10 +8,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.jcabi.github.Repos;
 import com.jcabi.github.RtGithub;
 import com.jcabi.github.Github;
 import com.jcabi.http.response.JsonResponse;
+
 
 import org.json.JSONObject;
 
@@ -19,12 +19,13 @@ import java.io.IOException;
 import java.util.List;
 
 
+
 public class MainActivity extends AppCompatActivity {
 
     private EditText editText;
     private TextView textView;
     private int page;
-    private String str;
+    private String str = "";
     private Github github;
 
 
@@ -44,12 +45,18 @@ public class MainActivity extends AppCompatActivity {
      //   Intent intent = new Intent(this, MessageActivity.class);
        // intent.putExtra("message", editText.getText().toString());
        // startActivity(intent);
-        str = "";
         github = new RtGithub();
 
         Thread thread = new Thread(() -> {
             try {
+                //запрос
                 JsonResponse resp = github.entry().uri().path("/search/repositories").queryParam("q", "testi").back().fetch().as(JsonResponse.class);
+                //сбор всех репозиториев
+//                List<JSONObject> items = resp.json().readObject().getJsonArray("items").getValuesAs(Ject.class);
+//
+//                for(JsonObject item : items) {
+//                    str += String.format("repo found: %s", item.get("full_name").toString()) + "\n";
+//                }
 
             } catch (IOException e) {
                 e.printStackTrace();
