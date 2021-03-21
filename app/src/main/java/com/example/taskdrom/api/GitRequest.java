@@ -18,7 +18,7 @@ public class GitRequest{
     }
 
     //тест для поиска и выгрузки репозиториев
-    public Map<String, String> findRepos(String name) {
+    public Map<String, String> findRepos(String name, int page) {
         response = new HashMap<>();
         if(thread != null && thread.isAlive()) {
             thread.interrupt();
@@ -28,7 +28,7 @@ public class GitRequest{
 //            Map<String, String> searchQuery = new HashMap<>();
 //            searchQuery.put("name", name);
             try {
-                List<SearchRepository> list = service.searchRepositories(name, 1);
+                List<SearchRepository> list = service.searchRepositories(name, page);
                 for(SearchRepository sr : list) {
                     response.put(sr.toString(), sr.getOwner());
                 }
