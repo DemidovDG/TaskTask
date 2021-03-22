@@ -12,20 +12,39 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 
-import com.example.taskdrom.api.GitRequest;
+import com.example.taskdrom.networktools.api.GitRequest;
+import com.example.taskdrom.networktools.model.GitRepo;
 import com.example.taskdrom.search.ExampleAdapter;
 import com.example.taskdrom.search.ExampleItem;
 import com.example.taskdrom.search.newpack.OnLoadMoreListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Consumer;
+import io.reactivex.rxjava3.functions.Predicate;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 public class MainActivity extends AppCompatActivity {
+
+
     private ExampleAdapter adapter;
     private List<ExampleItem> exampleList;
     private String saveSearch = "";
     private int page = 1;
+
+    private Thread thread = new Thread();
+
+    private HashMap<String, String> params;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,32 +75,32 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(adapter);
 
-        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
-            @Override
-            public void onLoadMore() {
-                exampleList.add(null);
-                adapter.notifyItemInserted(exampleList.size()-1);
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        exampleList.remove(exampleList.size() - 1);
-                        adapter.notifyItemRemoved(exampleList.size());
-
-                        String filterPattern = saveSearch.toLowerCase().trim();
-                        GitRequest request = new GitRequest();
-                        Map<String,String> map = request.findRepos(filterPattern, page);
-                        for(Map.Entry<String, String> entry : map.entrySet()) {
-                            exampleList.add(new ExampleItem(R.drawable.ic_launcher_background, entry.getKey(), entry.getValue()));
-                        }
-
-                        adapter.notifyDataSetChanged();
-                        adapter.setLoaded();
-
-                        ++page;
-                    }
-                }, 5000);
-            }
-        });
+//        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+//            @Override
+//            public void onLoadMore() {
+//                exampleList.add(null);
+//                adapter.notifyItemInserted(exampleList.size()-1);
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        exampleList.remove(exampleList.size() - 1);
+//                        adapter.notifyItemRemoved(exampleList.size());
+//
+//                        String filterPattern = saveSearch.toLowerCase().trim();
+////                        GitRequest request = new GitRequest();
+////                        Map<String,String> map = request.findRepos(filterPattern, page);
+////                        for(Map.Entry<String, String> entry : map.entrySet()) {
+////                            exampleList.add(new ExampleItem(R.drawable.ic_launcher_background, entry.getKey(), entry.getValue()));
+////                        }
+//
+//                        adapter.notifyDataSetChanged();
+//                        adapter.setLoaded();
+//
+//                        ++page;
+//                    }
+//                }, 5000);
+//            }
+//        });
     }
 
     @Override
@@ -92,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -101,13 +122,63 @@ public class MainActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
                 if(newText == null || newText.equals(""))
                     return false;
-                saveSearch = newText;
-                page = 2;
+                if(thread.isAlive()) {
+                    saveSearch = newText;
+                    return false;
+                }
 
-                adapter.getFilter().filter(newText);
+
+                thread = new Thread(() -> {
+                    String anotherSearch;
+                    do {
+                        anotherSearch = saveSearch;
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                exampleList.clear();
+                                exampleList.add(new ExampleItem(null, "waiting...", "waiting..."));
+                                adapter.notifyDataSetChanged();
+
+                            }
+                        });
+
+
+                        params = new HashMap<>();
+                        params.put(GitRequest.PARAM_QUERY, anotherSearch + " in:name");
+                        params.put(GitRequest.PARAM_PER_PAGE, "10");
+                        params.put(GitRequest.PARAM_PAGE, "1");
+
+                        GitRequest request = new GitRequest();
+                        String respString = request.get(GitRequest.SEARCH_REPO, params);
+                        List<GitRepo> list = request.repoFromJSON(respString);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                exampleList.clear();
+                                for (GitRepo repo : list) {
+                                    exampleList.add(new ExampleItem(repo.getAvatar(), repo.getOwner() + "/" + repo.getName(), repo.getDesc()));
+                                }
+                                adapter.notifyDataSetChanged();
+
+
+                            }
+                        });
+
+
+                    } while (!saveSearch.equals(anotherSearch));
+                });
+
+                thread.start();
+
                 return false;
             }
         });
+
+
         return true;
     }
+
+
 }

@@ -15,12 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.taskdrom.R;
-import com.example.taskdrom.api.GitRequest;
 import com.example.taskdrom.search.newpack.OnLoadMoreListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ExampleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
     private List<ExampleItem> exampleList;
@@ -111,7 +109,7 @@ public class ExampleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if(holder instanceof ExampleViewHolder) {
             ExampleViewHolder exampleViewHolder = (ExampleViewHolder) holder;
             ExampleItem currentItem = exampleList.get(position);
-            exampleViewHolder.imageView.setImageResource(currentItem.getImageResource());
+            exampleViewHolder.imageView.setImageBitmap(currentItem.getImageResource());
             exampleViewHolder.textView1.setText(currentItem.getText1());
             exampleViewHolder.textView2.setText(currentItem.getText2());
         }
@@ -144,11 +142,11 @@ public class ExampleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 filteredList.addAll(exampleListFull);
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
-                GitRequest request = new GitRequest();
-                Map<String,String> map = request.findRepos(filterPattern, 1);
-                for(Map.Entry<String, String> entry : map.entrySet()) {
-                    filteredList.add(new ExampleItem(R.drawable.ic_launcher_background, entry.getKey(), entry.getValue()));
-                }
+//                GitRequest request = new GitRequest();
+//                Map<String,String> map = request.findRepos(filterPattern, 1);
+//                for(Map.Entry<String, String> entry : map.entrySet()) {
+//                    filteredList.add(new ExampleItem(R.drawable.ic_launcher_background, entry.getKey(), entry.getValue()));
+//                }
             }
 
 
