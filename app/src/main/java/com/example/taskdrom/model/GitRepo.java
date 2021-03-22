@@ -2,16 +2,22 @@ package com.example.taskdrom.model;
 
 import android.graphics.Bitmap;
 
+import java.util.List;
+
 public class GitRepo {
     private String name;
     private String owner;
     private String desc;
-    private Bitmap avatar;
 
-    public GitRepo(String name, String owner, String desc) {
+    private Bitmap avatar;
+    private List<Issue> issues;
+
+    public GitRepo(String name, String owner, String desc, Bitmap avatar, List<Issue> issues) {
         this.name = name;
         this.owner = owner;
         this.desc = desc;
+        this.avatar = avatar;
+        this.issues = issues;
     }
 
 

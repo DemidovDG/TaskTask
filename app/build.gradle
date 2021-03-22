@@ -40,9 +40,6 @@ dependencies {
 
     //implementation group: 'org.eclipse.mylyn.github', name: 'org.eclipse.egit.github.core', version: '2.1.5'
     //implementation group: 'com.jcabi', name: 'jcabi-github', version: '1.1.2'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.11.3'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.11.3'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.3'
-    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
 
 }
