@@ -2,22 +2,18 @@ package com.example.taskdrom;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.jcabi.github.RtGithub;
-import com.jcabi.github.Github;
-import com.jcabi.http.response.JsonResponse;
 
+import com.example.taskdrom.api.GitRequest;
+import com.example.taskdrom.model.GitRepo;
 
-import org.json.JSONObject;
-
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -26,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView textView;
     private int page;
     private String str = "";
-    private Github github;
 
 
 
@@ -40,36 +35,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @SuppressLint({"ShowToast", "SetTextI18n"})
     public void push(View view) {
-     //   Intent intent = new Intent(this, MessageActivity.class);
-       // intent.putExtra("message", editText.getText().toString());
-       // startActivity(intent);
-        github = new RtGithub();
+        Map<String, String> params = new HashMap<>();
+        params.put(GitRequest.PARAM_QUERY, "test in:name");
+        params.put(GitRequest.PARAM_PER_PAGE, "5");
+        params.put(GitRequest.PARAM_PAGE, "1");
 
-        Thread thread = new Thread(() -> {
-            try {
-                //запрос
-                JsonResponse resp = github.entry().uri().path("/search/repositories").queryParam("q", "testi").back().fetch().as(JsonResponse.class);
-                //сбор всех репозиториев
-//                List<JSONObject> items = resp.json().readObject().getJsonArray("items").getValuesAs(Ject.class);
-//
-//                for(JsonObject item : items) {
-//                    str += String.format("repo found: %s", item.get("full_name").toString()) + "\n";
-//                }
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        thread.start();
-        try { thread.join(); } catch (InterruptedException e) { e.printStackTrace(); }
+        GitRequest gitRequest = new GitRequest();
+        str = gitRequest.get(GitRequest.SEARCH_REPO, params);
+        List<GitRepo> repos = gitRequest.repoFromJSON(str);
+
+        str = "";
+        for(GitRepo repo : repos) {
+            str += repo.getName() + "\n" + repo.getOwner() + "\n" + repo.getDesc() + "\n\n";
+        }
 
         textView.setText(str);
-
-        //textView.setText(request.toString() + "\n" + request.getUri() + "\n\n");
-        //textView.append(request.generateUri() + " ---URI\n\n");
-        //textView.append(request.getUri() + "\n\n");
 
     }
 
