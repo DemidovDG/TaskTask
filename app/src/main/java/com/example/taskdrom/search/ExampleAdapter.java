@@ -1,6 +1,9 @@
 package com.example.taskdrom.search;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +17,20 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.taskdrom.IssuesActivity;
+import com.example.taskdrom.MainActivity;
 import com.example.taskdrom.R;
+import com.example.taskdrom.networktools.model.GitRepo;
 import com.example.taskdrom.search.newpack.OnLoadMoreListener;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ExampleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
     private List<ExampleItem> exampleList;
     private List<ExampleItem> exampleListFull;
+    private List<GitRepo> listGitRepo;
 
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
@@ -33,7 +41,7 @@ public class ExampleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private boolean isLoading;
     private int visibleThreshold = 5;
     private int lastVisibleItem, totalItemCount;
-    private Activity activity;
+    private MainActivity activity;
     private LinearLayoutManager linearLayoutManager;
 
     //Для загружающихся
@@ -59,10 +67,10 @@ public class ExampleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     //для ленивой загрузки
-    public ExampleAdapter(List<ExampleItem> exampleList, RecyclerView recyclerView, Activity activity) {
+    public ExampleAdapter(List<ExampleItem> exampleList, RecyclerView recyclerView, MainActivity activity) {
         this.exampleList = exampleList;
         exampleListFull = new ArrayList<>(exampleList);
-        this.activity = activity;
+        this.activity = (MainActivity) activity;
 
         linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -112,6 +120,23 @@ public class ExampleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             exampleViewHolder.imageView.setImageBitmap(currentItem.getImageResource());
             exampleViewHolder.textView1.setText(currentItem.getText1());
             exampleViewHolder.textView2.setText(currentItem.getText2());
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Context context = v.getContext();
+                    Intent intent = new Intent(context, IssuesActivity.class);
+                    GitRepo repo = activity.getListRepo().get(position);
+                    //intent.putExtra("avatar", repo.getAvatar());
+                    intent.putExtra("full_name", repo.getOwner() + "/" + repo.getName());
+                    intent.putExtra("desc", repo.getDesc());
+                    intent.putExtra("issues", repo.getStringIssues());
+                    ByteArrayOutputStream bs = new ByteArrayOutputStream();
+                    repo.getAvatar().compress(Bitmap.CompressFormat.PNG, 90, bs);
+                    intent.putExtra("bitmap", bs.toByteArray());
+                    context.startActivity(intent);
+                }
+            });
         }
         else if(holder instanceof LoadingViewHolder) {
             LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;

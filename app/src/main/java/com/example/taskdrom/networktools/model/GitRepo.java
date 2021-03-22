@@ -2,6 +2,8 @@ package com.example.taskdrom.networktools.model;
 
 import android.graphics.Bitmap;
 
+import java.io.ByteArrayOutputStream;
+import java.io.Serializable;
 import java.util.List;
 
 public class GitRepo {
@@ -16,6 +18,7 @@ public class GitRepo {
         this.name = name;
         this.owner = owner;
         this.desc = desc;
+        //avatar.compress(Bitmap.CompressFormat.PNG, 90, new ByteArrayOutputStream());
         this.avatar = avatar;
         this.issues = issues;
     }
@@ -53,5 +56,26 @@ public class GitRepo {
 
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    public List<Issue> getIssues() {
+        return issues;
+    }
+
+    public void setIssues(List<Issue> issues) {
+        this.issues = issues;
+    }
+
+    public String getStringIssues() {
+        String str = "";
+
+        if( issues == null || issues.isEmpty())
+            return "Empty!";
+
+        for(int i = 0; i < issues.size(); i++) {
+            str += i + "\nTitle: " + issues.get(i).getTitle() + "\nLogin: " + issues.get(i).getLogin() + "\n\n";
+        }
+
+        return str;
     }
 }

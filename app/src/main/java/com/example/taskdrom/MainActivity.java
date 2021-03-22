@@ -35,7 +35,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
 public class MainActivity extends AppCompatActivity {
-
+    private List<GitRepo> listRepo;
 
     private ExampleAdapter adapter;
     private List<ExampleItem> exampleList;
@@ -75,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(adapter);
 
+
+
         adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
@@ -107,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
                                 exampleList.add(new ExampleItem(repo.getAvatar(), repo.getOwner() + "/" + repo.getName(), repo.getDesc()));
                             }
 
+                        //добавляю еще в список к тем
+                        listRepo.addAll(list);
                         adapter.notifyDataSetChanged();
                         adapter.setLoaded();
 
@@ -114,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 }, 5000);
             }
         });
+
     }
 
     @Override
@@ -165,15 +170,15 @@ public class MainActivity extends AppCompatActivity {
 
                         GitRequest request = new GitRequest();
                         String respString = request.get(GitRequest.SEARCH_REPO, params);
-                        List<GitRepo> list = request.repoFromJSON(respString);
+                        listRepo = request.repoFromJSON(respString);
 
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 exampleList.clear();
 
-                                if(list != null && !list.isEmpty())
-                                for (GitRepo repo : list) {
+                                if(listRepo != null && !listRepo.isEmpty())
+                                for (GitRepo repo : listRepo) {
                                     exampleList.add(new ExampleItem(repo.getAvatar(), repo.getOwner() + "/" + repo.getName(), repo.getDesc()));
                                 }
 
@@ -196,5 +201,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-
+    public List<GitRepo> getListRepo() {
+        return listRepo;
+    }
 }

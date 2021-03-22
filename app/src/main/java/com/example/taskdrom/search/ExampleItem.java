@@ -2,6 +2,8 @@ package com.example.taskdrom.search;
 
 import android.graphics.Bitmap;
 
+import java.io.ByteArrayOutputStream;
+
 //Элемент в RecyclerView
 public class ExampleItem {
     private Bitmap imageResource;

@@ -1,6 +1,11 @@
 package com.example.taskdrom.networktools.model;
 
-public class Issue {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
+public class Issue implements Parcelable {
     private String title;
     private String login;
 
@@ -24,6 +29,18 @@ public class Issue {
     public void setLogin(String login) {
         this.login = login;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeString(login);
+    }
+
 
 }
 
