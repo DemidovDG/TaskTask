@@ -75,32 +75,45 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(adapter);
 
-//        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
-//            @Override
-//            public void onLoadMore() {
-//                exampleList.add(null);
-//                adapter.notifyItemInserted(exampleList.size()-1);
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        exampleList.remove(exampleList.size() - 1);
-//                        adapter.notifyItemRemoved(exampleList.size());
-//
-//                        String filterPattern = saveSearch.toLowerCase().trim();
-////                        GitRequest request = new GitRequest();
-////                        Map<String,String> map = request.findRepos(filterPattern, page);
-////                        for(Map.Entry<String, String> entry : map.entrySet()) {
-////                            exampleList.add(new ExampleItem(R.drawable.ic_launcher_background, entry.getKey(), entry.getValue()));
-////                        }
-//
-//                        adapter.notifyDataSetChanged();
-//                        adapter.setLoaded();
-//
-//                        ++page;
-//                    }
-//                }, 5000);
-//            }
-//        });
+        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                if(exampleList.size() < 10) {
+                    return;
+                }
+
+                exampleList.add(null);
+                adapter.notifyItemInserted(exampleList.size()-1);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        ++page;
+
+                        exampleList.remove(exampleList.size() - 1);
+                        adapter.notifyItemRemoved(exampleList.size());
+
+                        String filterPattern = saveSearch.toLowerCase().trim();
+                        params = new HashMap<>();
+                        params.put(GitRequest.PARAM_QUERY, filterPattern + " in:name");
+                        params.put(GitRequest.PARAM_PER_PAGE, "10");
+                        params.put(GitRequest.PARAM_PAGE, String.valueOf(page));
+
+                        GitRequest request = new GitRequest();
+                        String respString = request.get(GitRequest.SEARCH_REPO, params);
+                        List<GitRepo> list = request.repoFromJSON(respString);
+                        if(list != null && !list.isEmpty())
+                            for (GitRepo repo : list) {
+                                exampleList.add(new ExampleItem(repo.getAvatar(), repo.getOwner() + "/" + repo.getName(), repo.getDesc()));
+                            }
+
+                        adapter.notifyDataSetChanged();
+                        adapter.setLoaded();
+
+                    }
+                }, 5000);
+            }
+        });
     }
 
     @Override
@@ -120,13 +133,14 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public boolean onQueryTextChange(String newText) {
-                if(newText == null || newText.equals(""))
+                if(newText == null || newText.length() < 3)
                     return false;
                 if(thread.isAlive()) {
                     saveSearch = newText;
                     return false;
                 }
-
+                page = 1;
+                saveSearch = newText;
 
                 thread = new Thread(() -> {
                     String anotherSearch;
@@ -157,12 +171,14 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 exampleList.clear();
+
+                                if(list != null && !list.isEmpty())
                                 for (GitRepo repo : list) {
                                     exampleList.add(new ExampleItem(repo.getAvatar(), repo.getOwner() + "/" + repo.getName(), repo.getDesc()));
                                 }
+
                                 adapter.notifyDataSetChanged();
-
-
+                                adapter.setLoaded();
                             }
                         });
 
