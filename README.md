@@ -12,7 +12,7 @@
   <img src="https://github.com/DemidovDG/pictures/raw/main/taskTask/found_2.png" width="270" height="540px"/></p>
 
 ### Экран результатов
-При нажатии на репозиторий пользователь попадает на экран деталей репозитория. На нём выводится информация о выбранном репозитории, присутствовуют те же элементы, что и в списке на экране поиска и первые 30 issues репозитория.
+При нажатии на репозиторий пользователь попадает на экран деталей репозитория. На нём выводится информация о выбранном репозитории, присутствуют те же элементы, что и в списке на экране поиска и первые 30 issues репозитория.
 <p align="center">
   <img src="https://github.com/DemidovDG/pictures/raw/main/taskTask/test_open_1.png" width="270" height="540px"/>
   <img src="https://github.com/DemidovDG/pictures/raw/main/taskTask/test_open_2.png" width="270" height="540px"/></p>
