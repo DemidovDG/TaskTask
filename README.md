@@ -16,5 +16,9 @@
 <p align="center">
   <img src="https://github.com/DemidovDG/pictures/raw/main/taskTask/test_open_1.png" width="270" height="540px"/>
   <img src="https://github.com/DemidovDG/pictures/raw/main/taskTask/test_open_2.png" width="270" height="540px"/></p>
-Иногда вместо issues может быть написано "Empty!", так как привышен лимит запросов:
->W/System.err: org.json.JSONException: Value {"message":"API rate limit exceeded for --.--.---.---. (But here's the good news: Authenticated requests get a higher rate limit. Check out the documentation for more details.)","documentation_url":"https:\/\/docs.github.com\/rest\/overview\/resources-in-the-rest-api#rate-limiting"} of type org.json.JSONObject cannot be converted to JSONArray
+
+Иногда вместо issues может быть написано "Empty!", так как привышен лимит запросов.
+
+```
+W/System.err: org.json.JSONException: Value {"message":"API rate limit exceeded for --.--.---.---. (But here's the good news: Authenticated requests get a higher rate limit. Check out the documentation for more details.)","documentation_url":"https:\/\/docs.github.com\/rest\/overview\/resources-in-the-rest-api#rate-limiting"} of type org.json.JSONObject cannot be converted to JSONArray
+```
